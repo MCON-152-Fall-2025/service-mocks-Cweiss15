@@ -182,8 +182,9 @@ class RecipeServiceTest {
             // Removed dead code: Optional<Recipe> exists = recipeService.getRecipeById(1L);
             doNothing().when(recipeRepository).deleteById(id);
             assertTrue(recipeService.deleteRecipe(1L));
-            inOrder(recipeRepository).verify(recipeRepository).existsById(id);
-            inOrder(recipeRepository).verify(recipeRepository).deleteById(id);
+            InOrder ordered = inOrder(recipeRepository);
+            ordered.verify(recipeRepository).existsById(id);
+            ordered.verify(recipeRepository).deleteById(id);
         }
 
         @Test
