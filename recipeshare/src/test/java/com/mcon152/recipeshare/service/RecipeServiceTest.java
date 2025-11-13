@@ -245,17 +245,27 @@ class RecipeServiceTest {
         @DisplayName("applies only non-null fields (argThat)")
         void appliesNonNullFields_only() {
             Recipe recipe = new Recipe(1L, "Challah", "tasty", "eggs, flour, water", "knead and rise and bake", 5);
-            recipe.setDescription("Scrumptious");
+            // Do NOT modify the existing recipe's description here; it should remain "tasty"
             when(recipeRepository.findById(1L)).thenReturn(Optional.of(recipe));
             Recipe update = new Recipe();
             update.setDescription("Scrumptious");
             when(recipeRepository.save(any(Recipe.class))).thenAnswer(invocationOnMock -> invocationOnMock.getArgument(0));
             Optional<Recipe> result = recipeService.patchRecipe(1L, update);
-            verify(recipeRepository).save(argThat((Recipe saved) -> saved.getDescription().equals("Scrumptious")));
-            verify(recipeRepository).save(argThat((Recipe saved) -> saved.getTitle().equals("Challah")));
-            assertEquals(recipe.getDescription(), result.get().getDescription());
+            // Verify that the saved recipe has the updated description and original title
+            verify(recipeRepository).save(argThat((Recipe saved) -> 
+                saved.getDescription().equals("Scrumptious") &&
+                saved.getTitle().equals("Challah") &&
+                saved.getIngredients().equals("eggs, flour, water") &&
+                saved.getInstructions().equals("knead and rise and bake") &&
+                saved.getServings() == 5
+            ));
+            assertEquals("Scrumptious", result.get().getDescription());
+            assertEquals("Challah", result.get().getTitle());
+            assertEquals("eggs, flour, water", result.get().getIngredients());
+            assertEquals("knead and rise and bake", result.get().getInstructions());
+            assertEquals(5, result.get().getServings());
             // findById -> present(existing)
-            // provide partial with only title set
+            // provide partial with only description set
             // repository.save returns the modified entity (use thenAnswer echo)
             // verify save(argThat(...)) to ensure unchanged fields remain as-is
         }
