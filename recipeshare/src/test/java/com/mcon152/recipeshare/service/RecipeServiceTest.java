@@ -135,10 +135,11 @@ class RecipeServiceTest {
         @Test
         @DisplayName("returns list from repository")
         void returnsList() {
-            List<Recipe> recipes = recipeService.getAllRecipes();
+            List<Recipe> recipes = List.of(savedRecipe(1L));
             when(recipeRepository.findAll()).thenReturn(recipes);
-            assertSame(recipes, recipeRepository.findAll());
-
+            List<Recipe> result = recipeService.getAllRecipes();
+            assertSame(recipes, result);
+            verify(recipeRepository).findAll();
         }
     }
 
