@@ -179,7 +179,7 @@ class RecipeServiceTest {
             Recipe recipe = new Recipe(1L, "Challah", "tasty", "eggs, flour, water", "knead and rise and bake", 5);
             Long id = recipe.getId();
             when(recipeRepository.existsById(id)).thenReturn(true);
-            Optional<Recipe> exists = recipeService.getRecipeById(1L);
+            // Removed dead code: Optional<Recipe> exists = recipeService.getRecipeById(1L);
             doNothing().when(recipeRepository).deleteById(id);
             assertTrue(recipeService.deleteRecipe(1L));
             inOrder(recipeRepository).verify(recipeRepository).existsById(id);
